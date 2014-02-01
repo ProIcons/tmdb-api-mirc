@@ -1,4 +1,7 @@
-tmdb-api-mirc
-=============
+TheMovieDB mSL API
+==================
 
-TheMovieDB mIRC API
+The Movie Database mSL Wrapper 
+Created by **ProIcons**
+
+Full Documentation in code.
