@@ -3,32 +3,35 @@
 ** * ************************************************************************************************************ * **
 ** * The Movie Database mIRC GUI          * _/_/_/_/_/  _/   _/    _/_/_/   _/              _/_/_/ _/_/  _/_/ _/_/_/**
 ** * Written by ProIcons                  *    _/     _/_/ _/_/   _/   _/  _/             _/       _/    _/    _/ * **
-** * Version: 1.0.0-Alpha                 *   _/     _/ _/_/ _/  _/    _/ _/_/_/_/  _/_/ _/ _/_/  _/    _/    _/  * **
+** * Version: 1.1.0                       *   _/     _/ _/_/ _/  _/    _/ _/_/_/_/  _/_/ _/ _/_/  _/    _/    _/  * **
 ** * API Version: 3                       *  _/    _/   _/  _/  _/   _/  _/    _/       _/    _/  _/  _/     _/   * **
 ** * TDMb API - GUI                       * _/    _/       _/  _/_/_/   _/_/_/_/        _/_/_/    _/_/    _/_/_/  * **
 ** * ************************************************************************************************************ * **
 ** *                                                                                                              * **
 ** * Requirements                                                                                                 * **
-** * - TMDb mIRC Wrapper API          by ProIcons                                                                 * **
+** * - TMDb mIRC Wrapper API          by ProIcons   (included)                                                    * **
 ** * - money function                 by kirbi      (included)                                                    * **
 ** * - mIRC Version 6.35+                                                                                         * **
 ** * - TMDb API-key                                                                                               * **
 ** *                                                                                                              * **
 ** * Basic Concept:                                                                                               * **
-** * - From Menu TMDb You have 3 Options.                                                                         * **
-** *   1) Search Movie.                                                                                           * **
+** * - From Menu TMDb You have 5 Options.                                                                         * **
+** *   1) Change Font                                                                                             * **
+** *      - It changes the font of the displayed results.                                                         * **
+** *                                                                                                              * **
+** *   2) Search Movie.                                                                                           * **
 ** *      - With this option an input prompt shows up and asks for movie name. After you click ok, it searches    * **
 ** *        for every available movie it can find and appearing it in another input prompti with each movie's     * **
 ** *        title release_date and id. If you want to view any of these movies, you simply type in its id, and    * **
 ** *        click ok.                                                                                             * **
 ** *                                                                                                              * **
-** *   2) Movie from IMDb Link.                                                                                   * **
+** *   3) Movie from IMDb Link.                                                                                   * **
 ** *      - Basicaly it gets the ID from the link and appearing the movie by ID.                                  * **
 ** *                                                                                                              * **
-** *   3) Movie from TMDb Link.                                                                                   * **
+** *   4) Movie from TMDb Link.                                                                                   * **
 ** *      - Basicaly it gets the ID from the link and appearing the movie by ID.                                  * **
 ** *                                                                                                              * **
-** *   4) Movie from ID.                                                                                          * **
+** *   5) Movie from ID.                                                                                          * **
 ** *      - Basicaly it gets the movie by ID.                                                                     * **
 ** *                                                                                                              * **
 ** * - From Menu in Movie's Details Window                                                                        * **
@@ -38,7 +41,10 @@
 ** *      - Closes the window.                                                                                    * **
 ** *                                                                                                              * **
 ** * Version                                                                                                      * **
-** * - v1.0.0                                                                                                     * **
+** * - v1.1.0                                                                                                     * **
+** *  * Fixed an issue, causing an infinity loop while displaying the results.                                    * **
+** *  + Added Change font Property. You can now define the font of your choice for the displayed results.         * **
+** * - v1.0.0-Alpha                                                                                               * **
 ** *  * Initial Release                                                                                           * **
 ** *                                                                                                              * **
 ** * Versioning                                                                                                   * **
@@ -65,9 +71,10 @@
 
 
 on *:start:{ _tmdb_gui_init }
-on *:load:{ _tmdb_gui_init }
+on *:load:{ _tmdb_gui init }
 alias -l _tmdb_gui_init {
-  set %_tmdb_gui_version Version 1.0.0-Alpha
+  if (!%_tmdb_gui_default_font) set %_tmdb_gui_default_font "Courier New"
+  set %_tmdb_gui_version Version 1.1.0
 }
 alias _tmdb_api_movie {
   _tmdb_gui_init
@@ -111,11 +118,11 @@ alias _tmdb_api_movie {
   drawfill %hwnd $rgb(105,105,105) $rgb(105,105,105) 0 0
   drawfill -nr %hwnd $rgb(105,105,105) $rgb(105,105,105) 0 0
   drawpic -nc %hwnd 0 0 %poster
-  drawtext -npo %hwnd 1 "Courier New" 18 190 0 %title
-  drawtext -nrpo %hwnd $rgb(66,66,66) "Courier New" 15 680 0 X
-  drawtext -nrpo %hwnd $rgb(66,66,66) "Courier New" 15 665 -5 _
-  ;drawtext -nrpo %hwnd $rgb(66,66,66) "Courier New" 15 685 129 >
-  drawtext -nrpo %hwnd $rgb(33,33,33) "Courier New" 12 190 18 $iif(%tagline,$v1,-)
+  drawtext -npo %hwnd 1 %_tmdb_gui_default_font 18 190 0 %title
+  drawtext -nrpo %hwnd $rgb(66,66,66) %_tmdb_gui_default_font 15 680 0 X
+  drawtext -nrpo %hwnd $rgb(66,66,66) %_tmdb_gui_default_font 15 665 -5 _
+  ;drawtext -nrpo %hwnd $rgb(66,66,66) %_tmdb_gui_default_font 15 685 129 >
+  drawtext -nrpo %hwnd $rgb(33,33,33) %_tmdb_gui_default_font 12 190 18 $iif(%tagline,$v1,-)
   drawline -rn %hwnd $rgb(133,133,133) 1 205 41 680 41
   drawline -rn %hwnd $rgb(133,133,133) 1 205 41 205 76
   drawline -rn %hwnd $rgb(133,133,133) 1 680 41 680 76
@@ -126,7 +133,7 @@ alias _tmdb_api_movie {
   drawline -rn %hwnd $rgb(133,133,133) 1 480 41 480 76
   var %i = 1
   while (%i <= $ceil($calc($len(%genres) / 24))) {
-    drawtext -npoc %hwnd 1 "Courier New" 13 485 $calc(27 + (%i * 15)) 200 55 $mid(%genres,$calc((%i - 1) * 24 + 1),24)
+    drawtext -npoc %hwnd 1 %_tmdb_gui_default_font 13 485 $calc(27 + (%i * 15)) 200 55 $mid(%genres,$calc((%i - 1) * 24 + 1),24)
     inc %i
   }
   drawline -nr %hwnd $rgb(133,133,133) 1 280 76 280 156
@@ -136,51 +143,51 @@ alias _tmdb_api_movie {
   drawline -nr %hwnd $rgb(133,133,133) 1 205 76 205 96
   drawline -nr %hwnd $rgb(133,133,133) 1 680 76 680 96
   drawline -nr %hwnd $rgb(133,133,133) 1 205 96 680 96
-  drawtext -npor %hwnd $rgb(0,0,0) "Courier New" 12 210 78 Director
-  drawtext -npr %hwnd $rgb(33,33,33) "Courier New" 12 285 78 %director
+  drawtext -npor %hwnd $rgb(0,0,0) %_tmdb_gui_default_font 12 210 78 Director
+  drawtext -npr %hwnd $rgb(33,33,33) %_tmdb_gui_default_font 12 285 78 %director
   ;Writers Box
   drawline -nr %hwnd $rgb(133,133,133) 1 205 96 205 116
   drawline -nr %hwnd $rgb(133,133,133) 1 680 96 680 116
   drawline -nr %hwnd $rgb(133,133,133) 1 205 116 680 116
-  drawtext -npor %hwnd $rgb(0,0,0) "Courier New" 12 210 98 Writer(s)
-  drawtext -npr %hwnd $rgb(33,33,33) "Courier New" 12 285 98 $iif(%sc,%sc,None)
+  drawtext -npor %hwnd $rgb(0,0,0) %_tmdb_gui_default_font 12 210 98 Writer(s)
+  drawtext -npr %hwnd $rgb(33,33,33) %_tmdb_gui_default_font 12 285 98 $iif(%sc,%sc,None)
   ;Misc Box
   drawline -nr %hwnd $rgb(133,133,133) 1 205 116 205 136
   drawline -nr %hwnd $rgb(133,133,133) 1 680 116 680 136
   drawline -nr %hwnd $rgb(133,133,133) 1 205 136 680 136
-  drawtext -npor %hwnd $rgb(0,0,0) "Courier New" 12 210 118 Run Time
-  drawtext -npr %hwnd $rgb(33,33,33) "Courier New" 12 285 118 %runtime Minutes
-  drawtext -npor %hwnd $rgb(0,0,0) "Courier New" 12 385 118 Rating
-  drawtext -npr %hwnd $rgb(33,33,33) "Courier New" 12 450 118 $round(%rating,1) ( $+ %rusers Votes)
+  drawtext -npor %hwnd $rgb(0,0,0) %_tmdb_gui_default_font 12 210 118 Run Time
+  drawtext -npr %hwnd $rgb(33,33,33) %_tmdb_gui_default_font 12 285 118 %runtime Minutes
+  drawtext -npor %hwnd $rgb(0,0,0) %_tmdb_gui_default_font 12 385 118 Rating
+  drawtext -npr %hwnd $rgb(33,33,33) %_tmdb_gui_default_font 12 450 118 $round(%rating,1) ( $+ %rusers Votes)
   ;Misc2 Box
   drawline -nr %hwnd $rgb(133,133,133) 1 205 136 205 156
   drawline -nr %hwnd $rgb(133,133,133) 1 680 136 680 156
   drawline -nr %hwnd $rgb(133,133,133) 1 205 156 680 156
-  drawtext -npor %hwnd $rgb(0,0,0) "Courier New" 12 210 138 Budget
-  drawtext -npr %hwnd $rgb(33,33,33) "Courier New" 12 285 138  $+ $money(%budget)
-  drawtext -npor %hwnd $rgb(0,0,0) "Courier New" 12 385 138 Revenue
-  drawtext -npr %hwnd $rgb(33,33,33) "Courier New" 12 450 138  $+ $money(%revenue)
+  drawtext -npor %hwnd $rgb(0,0,0) %_tmdb_gui_default_font 12 210 138 Budget
+  drawtext -npr %hwnd $rgb(33,33,33) %_tmdb_gui_default_font 12 285 138  $+ $money(%budget)
+  drawtext -npor %hwnd $rgb(0,0,0) %_tmdb_gui_default_font 12 385 138 Revenue
+  drawtext -npr %hwnd $rgb(33,33,33) %_tmdb_gui_default_font 12 450 138  $+ $money(%revenue)
   ;Plot Box
   drawline -nr %hwnd $rgb(133,133,133) 1 205 156 205 256
   drawline -nr %hwnd $rgb(133,133,133) 1 680 156 680 256
   drawline -nr %hwnd $rgb(133,133,133) 1 205 256 680 256
   var %a = 1
   :start
-  var %i = 1
+  while ($left(%desc,1) == $chr(32)) { %desc = $mid(%desc,2,$len(%desc)) }
   var %new_text
+  var %i = 1
   while (%desc) {
     %new_text = %new_text $gettok(%desc,%i,32)
     if ($len(%new_text) > 78) && ($len(%desc) >= 78) {
       %new_text = $deltok(%new_text,$numtok(%new_text,32),32)
       %desc = $remove(%desc,%new_text)
-      drawtext -npr %hwnd $rgb(33,33,33) "Courier New" 10 210 $calc(148 + (%a * 10)) %new_text
+      drawtext -npr %hwnd $rgb(33,33,33) %_tmdb_gui_default_font 10 210 $calc(148 + (%a * 10)) %new_text
       %new_Text = $null
       inc %a
       goto start
-
     }
-    elseif ($len(%new_text) < 78) && ($len(%desc) < 78) {
-      drawtext -npr %hwnd $rgb(33,33,33) "Courier New" 10 210 $calc(148 + (%a * 10)) %desc
+    elseif ($len(%new_text) <= 78) && ($len(%desc) <= 78) {
+      drawtext -npr %hwnd $rgb(33,33,33) %_tmdb_gui_default_font 10 210 $calc(148 + (%a * 10)) %desc
       break
     }
     inc %i
@@ -204,9 +211,6 @@ alias money {
     else { return $+($chr(36),%result) }
   }
 }
-
-
-
 alias -l movewin {
   if ($window($1)) {
     window $1 $calc($mouse.cx -$2) $calc($mouse.cy -$3)
@@ -223,6 +227,8 @@ menu * {
   .-
   . $style(2) TheMovieDB GUI:noop
   . $style(3) %_tmdb_gui_version $+ :noop
+  .-
+  .Change Font:$iif(!$dialog(_tmdb_gui_font),dialog -md _tmdb_gui_font _tmdb_gui_font,dialog -v _tmdb_gui_font)
   .-
   .Serach Movie:_tmdb_search_movie
   .Movie from ID:_tmdb_api_movie $input(Please provide the IMDb/TMDb ID of the movie you want to see.,eo,TMDb GUI) 
@@ -262,33 +268,33 @@ alias -l _tmdb_search_movie {
 menu * {
   mouse: {
     if (*movie* iswm $active) && (*casts* !iswm $active) {
-      if ($inrect($mouse.x,$mouse.y,680,0,$width(X,"Courier New",15),$height(X,"Courier New",15))) {
+      if ($inrect($mouse.x,$mouse.y,680,0,$width(X,%_tmdb_gui_default_font,15),$height(X,%_tmdb_gui_default_font,15))) {
         set %_tmdb_gui_x_inside 1
-        drawrect -rf $active $rgb(105,105,105) 1 680 0 $width(X,"Courier New",15) $height(X,"Courier New",15)
-        drawtext -rpo $active $rgb(33,33,33) "Courier New" 15 680 0 X
+        drawrect -rf $active $rgb(105,105,105) 1 680 0 $width(X,%_tmdb_gui_default_font,15) $height(X,%_tmdb_gui_default_font,15)
+        drawtext -rpo $active $rgb(33,33,33) %_tmdb_gui_default_font 15 680 0 X
       }
       elseif (%_tmdb_gui_x_inside == 1) {
         set %_tmdb_gui_x_inside 0 
-        drawrect -rf $active $rgb(105,105,105) 1 680 0 $width(X,"Courier New",16) $height(X,"Courier New",15)
-        drawtext -rpo $active $rgb(66,66,66) "Courier New" 15 680 0 X
+        drawrect -rf $active $rgb(105,105,105) 1 680 0 $width(X,%_tmdb_gui_default_font,16) $height(X,%_tmdb_gui_default_font,15)
+        drawtext -rpo $active $rgb(66,66,66) %_tmdb_gui_default_font 15 680 0 X
       }
-      if ($inrect($mouse.x,$mouse.y,665,-5,$width(_,"Courier New",15),$height(_,"Courier New",15))) {
+      if ($inrect($mouse.x,$mouse.y,665,-5,$width(_,%_tmdb_gui_default_font,15),$height(_,%_tmdb_gui_default_font,15))) {
         set %_tmdb_gui_-_inside 1
-        drawrect -rf $active $rgb(105,105,105) 1 665 -5 $width(_,"Courier New",15) $height(_,"Courier New",15)
-        drawtext -rpo $active $rgb(33,33,33) "Courier New" 15 665 -5 _
+        drawrect -rf $active $rgb(105,105,105) 1 665 -5 $width(_,%_tmdb_gui_default_font,15) $height(_,%_tmdb_gui_default_font,15)
+        drawtext -rpo $active $rgb(33,33,33) %_tmdb_gui_default_font 15 665 -5 _
       }
       elseif (%_tmdb_gui_-_inside == 1) {
         set %_tmdb_gui_-_inside 0 
-        drawrect -rf $active $rgb(105,105,105) 1 665 -5 $width(_,"Courier New",16) $height(_,"Courier New",15)
-        drawtext -rpo $active $rgb(66,66,66) "Courier New" 15 665 -5 _
+        drawrect -rf $active $rgb(105,105,105) 1 665 -5 $width(_,%_tmdb_gui_default_font,16) $height(_,%_tmdb_gui_default_font,15)
+        drawtext -rpo $active $rgb(66,66,66) %_tmdb_gui_default_font 15 665 -5 _
       }
       if ($inrect($mouse.x,$mouse.y,207,45,200,28)) {
         set %_tmdb_gui_mpaa_inside 1 
-        drawtext -r $active $rgb(0,0,0) "Courier New" 10 210 260 MPAA: http://www.mpaa.org/ratings/what-each-rating-means
+        drawtext -r $active $rgb(0,0,0) %_tmdb_gui_default_font 10 210 260 MPAA: http://www.mpaa.org/ratings/what-each-rating-means
       }
       elseif (%_tmdb_gui_mpaa_inside == 1) {
         set %_tmdb_gui_mpaa_inside 0
-        drawrect -rf $active $rgb(105,105,105) 1 210 260 $width(MPAA: http://www.mpaa.org/ratings/what-each-rating-means,"Courier New",15) $height(MPAA: http://www.mpaa.org/ratings/what-each-rating-means,"Courier New",10)
+        drawrect -rf $active $rgb(105,105,105) 1 210 260 $width(MPAA: http://www.mpaa.org/ratings/what-each-rating-means,%_tmdb_gui_default_font,15) $height(MPAA: http://www.mpaa.org/ratings/what-each-rating-means,%_tmdb_gui_default_font,10)
       }
     }
   }
@@ -299,11 +305,11 @@ menu * {
           run http://www.mpaa.org/ratings/what-each-rating-means
         }
       }
-      if ($inrect($mouse.x,$mouse.y,665,-5,$width(_,"Courier New",15),$height(_,"Courier New",15))) {
+      if ($inrect($mouse.x,$mouse.y,665,-5,$width(_,%_tmdb_gui_default_font,15),$height(_,%_tmdb_gui_default_font,15))) {
         var %win = $active
         window -n %win
       }
-      if ($inrect($mouse.x,$mouse.y,680,0,$width(X,"Courier New",15),$height(X,"Courier New",15))) {
+      if ($inrect($mouse.x,$mouse.y,680,0,$width(X,%_tmdb_gui_default_font,15),$height(X,%_tmdb_gui_default_font,15))) {
         var %win = $active
         window -c %win
         window -c %win $+ .casts
@@ -320,9 +326,9 @@ menu * {
 alias picsave {
   window -hp +bd @tosave 0 0 700 278
   drawcopy $1 0 0 $window($1).w $window($1).h @tosave 0 0
-  drawtext -npor @tosave $rgb(0,0,0) "Courier New" 12 200 260 TheMovieDB.org API Wrapper & GUI by ProIcons. Contact: info@devian.gr
-  drawrect -rf @tosave $rgb(105,105,105) 1 680 0 $width(X,"Courier New",15) $height(X,"Courier New",15)
-  drawrect -rf @tosave $rgb(105,105,105) 1 665 0 $width(_,"Courier New",15) $height(_,"Courier New",15)
+  drawtext -npor @tosave $rgb(0,0,0) %_tmdb_gui_default_font 12 200 260 TheMovieDB.org API Wrapper & GUI by ProIcons. Contact: info@devian.gr
+  drawrect -rf @tosave $rgb(105,105,105) 1 680 0 $width(X,%_tmdb_gui_default_font,15) $height(X,%_tmdb_gui_default_font,15)
+  drawrect -rf @tosave $rgb(105,105,105) 1 665 0 $width(_,%_tmdb_gui_default_font,15) $height(_,%_tmdb_gui_default_font,15)
   var %file = $sfile($+($iif(%_tmdb_gui_last_save_path,$v1,C:\),*.bmp))
   if ($exists(%file)) {
     if ($input(Are you sure you want to overwrite this file?,yw,Replace Warning!)) {
@@ -336,3 +342,44 @@ alias picsave {
   set %_tmdb_gui_last_save_path $nofile(%file)
   window -c @tosave
 }
+alias get_font_list {
+  if ($isid) {
+    var %c = fontlist
+    if (!$com(%c)) {
+      .comopen %c MSScriptControl.ScriptControl
+      noop $com(%c,language,4,bstr*,VBScript)
+      var %code Function get_font_list() $crlf Set objFSO=CreateObject("Scripting.FileSystemObject") $crlf outFile=" $+ $mircdir $+ \stdout.a" $crlf Set objFile = objFSO.CreateTextFile(outFile,True) $crlf Const HKEY_LOCAL_MACHINE = &H80000002 $crlf strComputer = "." $crlf strRes = "" $crlf Set objReg=GetObject("winmgmts:{impersonationLevel=impersonate}!\\" & _ $crlf strComputer & "\root\default:StdRegProv") $crlf strKeyPath = "Software\Microsoft\Windows NT\CurrentVersion\Fonts" $crlf objReg.EnumValues HKEY_LOCAL_MACHINE, _ $crlf strKeyPath,arrEntryNames $crlf For Each strValue in arrEntryNames $crlf objFile.Write strValue & vbCrLf $crlf Next $crlf get_font_list=" $+ $mircdir $+ \stdout.a" $crlf objFile.Close $crlf End Function
+      noop $com(%c,addcode,1,bstr*,%code)
+      var %t $+(get_font_list,$chr(40),$chr(41))
+      .timer 1 1 comclose %c
+      if ($com(%c,eval,1,bstr*,%t)) return $com(%c).result
+
+    }
+  }
+}
+dialog _tmdb_gui_font {
+  title "mIRC TMDb GUI"
+  size -1 -1 158 10
+  option dbu
+  combo 1, 0 0 122 96, size drop
+  button "Save", 2, 121 0 37 10
+}
+on *:dialog:_tmdb_gui_font:init:0:{
+  .timer 1 0 font_init
+}
+alias font_init {
+  var %fontlist = $get_font_list
+  var %i = 1
+  while (%i <= $lines(%fontlist) ) {
+    var %font = $gettok($read(%fontlist,%i),1,40)
+    while ($left(%font,1) == $chr(32)) { %font = $mid(%font,2,$len(%font)) }
+    while ($right(%font,1) == $chr(32)) { %font = $mid(%font,1,$calc($len(%font) - 1))) }
+    did $iif(%i == 1,-ra,-a) _tmdb_gui_font 1 %font
+    if (%font == %_tmdb_gui_default_font) { 
+      did -c _tmdb_gui_font 1 %i 
+    }
+    inc %i
+  }
+  .remove %fontlist
+}
+on *:dialog:_tmdb_gui_font:sclick:2:{ set %_tmdb_gui_default_font $qt($did($dname,1)) }
