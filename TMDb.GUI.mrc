@@ -3,7 +3,7 @@
 ** * ************************************************************************************************************ * **
 ** * The Movie Database mIRC GUI          * _/_/_/_/_/  _/   _/    _/_/_/   _/              _/_/_/ _/_/  _/_/ _/_/_/**
 ** * Written by ProIcons                  *    _/     _/_/ _/_/   _/   _/  _/             _/       _/    _/    _/ * **
-** * Version: 1.1.0                       *   _/     _/ _/_/ _/  _/    _/ _/_/_/_/  _/_/ _/ _/_/  _/    _/    _/  * **
+** * Version: 1.1.1                       *   _/     _/ _/_/ _/  _/    _/ _/_/_/_/  _/_/ _/ _/_/  _/    _/    _/  * **
 ** * API Version: 3                       *  _/    _/   _/  _/  _/   _/  _/    _/       _/    _/  _/  _/     _/   * **
 ** * TDMb API - GUI                       * _/    _/       _/  _/_/_/   _/_/_/_/        _/_/_/    _/_/    _/_/_/  * **
 ** * ************************************************************************************************************ * **
@@ -41,6 +41,9 @@
 ** *      - Closes the window.                                                                                    * **
 ** *                                                                                                              * **
 ** * Version                                                                                                      * **
+** * - v1.1.1                                                                                                     * **
+** *  * Fixed compatibility with Windows 8 Operating Systems.                                                     * **
+** *  * Fixed bug where on first startup wasnt recieving the required resources.                                  * **
 ** * - v1.1.0                                                                                                     * **
 ** *  * Fixed an issue, causing an infinity loop while displaying the results.                                    * **
 ** *  + Added Change font Property. You can now define the font of your choice for the displayed results.         * **
@@ -71,10 +74,12 @@
 
 
 on *:start:{ _tmdb_gui_init }
-on *:load:{ _tmdb_gui init }
-alias -l _tmdb_gui_init {
+on *:load:{ _tmdb_gui_init }
+alias _tmdb_gui_init {
   if (!%_tmdb_gui_default_font) set %_tmdb_gui_default_font "Courier New"
-  set %_tmdb_gui_version Version 1.1.0
+  set %_tmdb_gui_version Version 1.1.1
+  if (!$exists(tmdb\system)) mkdir tmdb\system
+  if (!$exists(tmdb\system\g-rating.png)) noop $vbs_download(http://www.devian.gr/tmdb/resx/g-rating.png,tmdb/system/g-rating.png)
 }
 alias _tmdb_api_movie {
   _tmdb_gui_init
@@ -117,7 +122,7 @@ alias _tmdb_api_movie {
   }
   drawfill %hwnd $rgb(105,105,105) $rgb(105,105,105) 0 0
   drawfill -nr %hwnd $rgb(105,105,105) $rgb(105,105,105) 0 0
-  drawpic -nc %hwnd 0 0 %poster
+  drawpic -nc %hwnd 0 0 $shortfn(%poster)
   drawtext -npo %hwnd 1 %_tmdb_gui_default_font 18 190 0 %title
   drawtext -nrpo %hwnd $rgb(66,66,66) %_tmdb_gui_default_font 15 680 0 X
   drawtext -nrpo %hwnd $rgb(66,66,66) %_tmdb_gui_default_font 15 665 -5 _
