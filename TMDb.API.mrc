@@ -3,7 +3,7 @@
 ** * ************************************************************************************************************ * **
 ** * The Movie Database mIRC API Wrapper  * _/_/_/_/_/  _/   _/    _/_/_/   _/                _/    _/_/_/ _/_/_/ * **
 ** * Written by ProIcons                  *    _/     _/_/ _/_/   _/   _/  _/               _/_/   _/  _/   _/    * **
-** * Version: 1.0.0-Alpha                 *   _/     _/ _/_/ _/  _/    _/ _/_/_/_/  _/_/  _/  _/  _/_/_/   _/     * **
+** * Version: 1.0.1                       *   _/     _/ _/_/ _/  _/    _/ _/_/_/_/  _/_/  _/  _/  _/_/_/   _/     * **
 ** * API Version: 3                       *  _/    _/   _/  _/  _/   _/  _/    _/       _/_/_/_/ _/       _/      * **
 ** * TDMb API                             * _/    _/       _/  _/_/_/   _/_/_/_/       _/    _/ _/     _/_/_/     * **
 ** * ************************************************************************************************************ * **
@@ -62,6 +62,9 @@
 ** * Version                                                                                                      * **
 ** * - v1.0.0                                                                                                     * **
 ** *  * Initial Release                                                                                           * **
+** * - V1.0.1                                                                                                     * **
+** *  * Fixed bug on Configuration Wizard where, on variable _tmdb_clear_process instead of ms it was asking for  * **
+** *    seconds.                                                                                                  * **
 ** *                                                                                                              * **
 ** * Available Methods                                                                                            * **
 ** * - All method are listed here. Everything is documentated. Optional Parameteres                               * **
@@ -386,6 +389,7 @@
 ** *                                                                                                              * **
 ** * Bug tracker                                                                                                  * **
 ** *  - Have a bug or a feature request? Post comment here.                                                       * **
+** *  - https://github.com/ProIcons/tmdb-api-msl                                                                  * **
 ** *                                                                                                              * **
 ** **************************************************************************************************************** **
 **********************************************************************************************************************
@@ -586,14 +590,14 @@ alias _tmdb_wizard {
   elseif ($1 == 9) {
     %b | %h | %b | %n 0 0 Data Processor Configuration0,0 $str(.,11) $+ 1 $p.bar($1 $+ /32,4|,0.) | %b | %h
     %t &_tmdb_clear_process (Required)
-    %n 4 0 This variable defines the time in seconds that the jsons marked for
-    %n 4 0 process and moved to folder tmdb/process will be erased. (Default: 5)
+    %n 4 0 This variable defines the time in ms that the jsons marked for process
+    %n 4 0 and moved to folder tmdb/process will be erased. (Default: 5000)
     %h | %h | %h | %h | %h | %h | %h | %h | %h | %h 
     %b
     %t Please Enter your Input:
     set %_tmdb_wizard_step 9
     set %_tmdb_wizard_more _tmdb_clear_process
-    editbox @_TMDb_CommandLine 5
+    editbox @_TMDb_CommandLine 5000
   }
   elseif ($1 == 10) {
     %b | %h | %b | %t Cache Configuration0,0 $str(.,20) $+ 1 $p.bar($1 $+ /32,4|,0.) | %b | %h
@@ -1893,7 +1897,6 @@ alias _tmdb_isid {
           if (!$hget(%id,callback)) { return $_tmdb_process(%_tmdb_tmp_socket) }
           else { _tmdb_process %_tmdb_tmp_socket | return $true }
 
-
         } 
       }
     }
@@ -2098,7 +2101,6 @@ alias -l _tmdb_process {
       }
     }
     :continue
-
 
     if ($gettok($hget($1,method),2,47) == movie) || (genre/*/movies iswm $hget($1,method)) || ($gettok($hget($1,method),1,47) == movie) {
       var %set = $!replace($iif($hget($1,args),$v1,%_tmdb_cb_ms),$chr(32),$chr(44),@is_for_adults,$json_utf8(%json_new,results,%c,adult),@backdrop_path,$json_utf8(%json_new,results,%c,backdrop_path),@id,$json_utf8(%json_new,results,%c,id), $&
